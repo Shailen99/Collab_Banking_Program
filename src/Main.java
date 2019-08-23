@@ -1,10 +1,12 @@
 import java.io.*;
 import java.util.Scanner;
+import java.util.UUID;
 
 public class Main {
 
     static User loggedIn;
     static Scanner sc=new Scanner(System.in);
+    static String username_readaccount;
     /**
      * @Author Shailen
      * Setting Up the Time for each trasnactions
@@ -39,7 +41,7 @@ public class Main {
                         break;
                 }
             } else {
-                System.out.println("1 to deposit, 2 to withdraw, 3 to logout, 4 to exit");
+                System.out.println("1 to deposit, 2 to withdraw, 3 to show account history, 4 to logout, 5 to exit");
                 switch(sc.nextLine()) {
                     case "1":
                         deposit();
@@ -48,9 +50,12 @@ public class Main {
                         withdraw();
                         break;
                     case "3":
-                        loggedIn=null;
+                        readAccountHistory();
                         break;
                     case "4":
+                        loggedIn=null;
+                        break;
+                    case "5":
                         running=false;
                         System.out.println("Exiting");
                         break;
@@ -70,6 +75,7 @@ public class Main {
         String username;
         while(true) {
             username=doubleVerify("username", "Usernames");
+            String uniqueID = UUID.randomUUID().toString();
             File[] listOfFiles=new File("data").listFiles();
             boolean notExist=true;
             for(int i=0; i<listOfFiles.length; i++) {
@@ -77,7 +83,11 @@ public class Main {
                     notExist=false;
                 }
             }
-            if(notExist) break;
+            if(notExist)
+            {
+                System.out.println("Your ID:" + uniqueID);
+                break;
+            }
             System.out.println("Username taken, please enter another");
         }
         String password=doubleVerify("password", "Passwords");
@@ -92,6 +102,7 @@ public class Main {
         String user;
         System.out.println("Please enter your username");
         user=sc.nextLine();
+        username_readaccount=user;
         File[] listOfFiles = new File("data").listFiles();
         boolean exists=false;
         for(int i=0; i<listOfFiles.length; i++) {
@@ -190,4 +201,30 @@ public class Main {
             System.out.println("Error has occurred");
         }
     }
-}
+
+
+    public static void readAccountHistory() {
+        System.out.println("Account History of " + username_readaccount);
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("data" + File.separator + username_readaccount + ".txt"));
+            String line = reader.readLine();
+            int lineNum=0;
+               while(line != null)
+               {
+                   if(lineNum > 2)
+                   {
+                       System.out.println(line);
+                   }
+                   //readnextline
+                   line = reader.readLine();
+                   lineNum++;
+               }
+
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    }

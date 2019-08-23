@@ -40,7 +40,12 @@ public class User {
                         writer.write(newBal+"\n");
                     } else writer.write(lines.get(i)+"\n");
                 }
-                writer.write("("+dtf.format(now)+") "+ amount+"\n");
+                /**
+                 * @Author Shailen
+                 * After each transaction, the time gets saved to the text file
+                 */
+
+                writer.write("("+dtf.format(now)+")_"+ amount+"\n");
                 writer.flush();
                 writer.close();
             }
