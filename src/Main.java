@@ -1,4 +1,6 @@
 import java.io.*;
+import java.nio.file.*;
+import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -73,9 +75,10 @@ public class Main {
      */
     public static void signup() {
         String username;
+        String uniqueID = UUID.randomUUID().toString();
+
         while(true) {
             username=doubleVerify("username", "Usernames");
-            String uniqueID = UUID.randomUUID().toString();
             File[] listOfFiles=new File("data").listFiles();
             boolean notExist=true;
             for(int i=0; i<listOfFiles.length; i++) {
@@ -85,13 +88,14 @@ public class Main {
             }
             if(notExist)
             {
-                System.out.println("Your ID:" + uniqueID);
                 break;
             }
             System.out.println("Username taken, please enter another");
         }
         String password=doubleVerify("password", "Passwords");
+        System.out.println("Your ID:" + uniqueID);
         writeToFile("data"+File.separator+username+".txt", password+"\n0");
+        AddUniqueID(username, uniqueID);
     }
 
     /**
@@ -130,6 +134,7 @@ public class Main {
      */
     public static void deposit() {
         System.out.println("Please enter how much you'd like to deposit");
+        System.out.println("You now have "+loggedIn.getID());
         float deposit;
         try {
             deposit=Float.parseFloat(sc.nextLine());
@@ -193,6 +198,7 @@ public class Main {
      */
     public static void writeToFile(String file, String write) {
         try {
+
             BufferedWriter writer=new BufferedWriter(new FileWriter(file));
             writer.write(write);
             writer.flush();
@@ -203,22 +209,58 @@ public class Main {
     }
 
 
+    /**
+     * @Shailen
+     * This functions rewrites the FIle to include the USER ID above the total while also including the password above it.
+     * Converts textfile into array list and then add element where total originally was.
+     */
+    public static void AddUniqueID(String username, String uniqueID){
+        try{
+            List<String> lines = Files.readAllLines(Paths.get("data" + File.separator + username + ".txt"));
+            int LineCounter = 0;
+            for(int i = 0; i < lines.size(); i++) {
+                if(LineCounter == 0)
+                {
+                    lines.add(1, uniqueID);
+                }
+                System.out.println(lines.get(i));
+                LineCounter++;
+            }
+            FileWriter outFile = new FileWriter("data" + File.separator + username + ".txt");
+            BufferedWriter outwriter = new BufferedWriter(outFile);
+
+            for (int i = 0; i < lines.size(); i++) {
+                outwriter.write(lines.get(i));
+                outwriter.newLine();
+            }
+            outwriter.close();
+
+        }
+        catch(Exception e) {
+            System.out.println("Error has occurred");
+        }
+    }
+
+    /**
+     * @Shailen
+     * This function prints out all of the User's Account history
+     */
     public static void readAccountHistory() {
-        System.out.println("Account History of " + username_readaccount);
+        System.out.println("Account History of " + username_readaccount + ":");
         try {
             BufferedReader reader = new BufferedReader(new FileReader("data" + File.separator + username_readaccount + ".txt"));
             String line = reader.readLine();
             int lineNum=0;
-               while(line != null)
-               {
-                   if(lineNum > 2)
-                   {
-                       System.out.println(line);
-                   }
-                   //readnextline
-                   line = reader.readLine();
-                   lineNum++;
-               }
+            while(line != null)
+            {
+                if(lineNum > 2)
+                {
+                    System.out.println(line);
+                }
+                //readnextline
+                line = reader.readLine();
+                lineNum++;
+            }
 
         }
         catch(IOException e) {
@@ -227,4 +269,4 @@ public class Main {
 
     }
 
-    }
+}

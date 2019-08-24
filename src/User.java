@@ -1,69 +1,70 @@
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
-import java.time.format.DateTimeFormatter;
-import java.time.LocalDateTime;
+     import java.io.BufferedWriter;
+     import java.io.File;
+     import java.io.FileWriter;
+     import java.nio.file.Files;
+     import java.nio.file.Paths;
+     import java.time.LocalDateTime;
+     import java.time.format.DateTimeFormatter;
+     import java.util.List;
 
-public class User {
-    String loc; //The location of the user file
+     public class User {
+     String loc;
+     static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+     static LocalDateTime now = LocalDateTime.now();
 
-    static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-    static LocalDateTime now = LocalDateTime.now();
+     User(String user) {
+     this.loc = user;
+     }
 
-    /**
-     * Initializer
-     * @Author Rana
-     * @param user The user
-     */
-    User(String user) {
-        loc=user;
-    }
+     void changeBal(float amount) {
+     try {
+     File tempFile = new File("data" + File.separator + "tempFile.txt");
+     BufferedWriter writer = new BufferedWriter(new FileWriter("data" + File.separator + "tempFile.txt"));
+     List<String> lines = Files.readAllLines(Paths.get("data" + File.separator + this.loc + ".txt"));
+     float newBal = Float.parseFloat((String)lines.get(2)) + amount;
 
-    /**
-     * Changes the balance
-     * @Author Rana
-     * @param amount The amount it changes
-     */
-    void changeBal(float amount) {
-        try {
-            File tempFile=new File("data"+File.separator+"tempFile.txt");
-            BufferedWriter writer = new BufferedWriter(new FileWriter("data"+File.separator+"tempFile.txt"));
-            {
-                List<String> lines=Files.readAllLines(Paths.get("data"+File.separator+loc+".txt"));
-                float newBal=Float.parseFloat(lines.get(1))+amount;
-                for(int i=0; i<lines.size(); i++) {
-                    if(i==1) {
-                        writer.write(newBal+"\n");
-                    } else writer.write(lines.get(i)+"\n");
-                }
-                /**
-                 * @Author Shailen
-                 * After each transaction, the time gets saved to the text file
-                 */
+     for(int i = 0; i < lines.size(); ++i) {
+     if (i == 2) {
+     writer.write(newBal + "\n");
+     } else {
+     writer.write((String)lines.get(i) + "\n");
+     }
+     }
 
-                writer.write("("+dtf.format(now)+")_"+ amount+"\n");
-                writer.flush();
-                writer.close();
-            }
-            new File("data"+File.separator+loc+".txt").delete();
-            tempFile.renameTo(new File("data"+File.separator+loc+".txt"));
-            tempFile.delete();
-        } catch(Exception e) {}
-    }
+     writer.write("(" + dtf.format(now) + ")_" + amount + "\n");
+     writer.flush();
+     writer.close();
+     (new File("data" + File.separator + this.loc + ".txt")).delete();
+     tempFile.renameTo(new File("data" + File.separator + this.loc + ".txt"));
+     tempFile.delete();
+     } catch (Exception var7) {
+     ;
+     }
 
-    /**
-     * Gets the balance
-     * @Author Rana
-     * @return Balance
-     */
-    float getBal() {
-        try {
-            return Float.parseFloat(Files.readAllLines(Paths.get("data"+File.separator+loc+".txt")).get(1));
-        } catch(Exception e) {}
-        return 0;
-    }
-}
+     }
+
+     float getBal() {
+     try {
+     return Float.parseFloat((String)Files.readAllLines(Paths.get("data" + File.separator + this.loc + ".txt")).get(2));
+     } catch (Exception var2) {
+     return 0.0F;
+     }
+     }
+
+     /*@Shailen
+     * This finds the value of the USER ID and returns it
+     * */
+     String getID()
+     {
+     try{
+     List<String> lines = Files.readAllLines(Paths.get("data" + File.separator + this.loc + ".txt"));
+     String ID = lines.get(1);
+     return ID;
+     }
+     catch (Exception var2) {
+     return "Error";
+     }
+     }
+
+     }
